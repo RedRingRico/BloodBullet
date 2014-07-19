@@ -98,6 +98,7 @@
   <ItemGroup>
     <Compile Include="MainGame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renderer\Renderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

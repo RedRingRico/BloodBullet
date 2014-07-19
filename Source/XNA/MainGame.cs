@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace BloodBullet
 {
@@ -9,8 +10,14 @@ namespace BloodBullet
 	{
 		static void Main( string[ ] p_Args )
 		{
+			Renderer.Renderer GameRenderer = new Renderer.Renderer( );
+
+			GameRenderer.SetClearColour( 1.0f, 0.0f, 0.0f );
+
 			while( true )
 			{
+				GameRenderer.BeginScene( );
+				GameRenderer.EndScene( );
 			}
 		}
 	}
