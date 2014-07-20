@@ -12,7 +12,7 @@ namespace BloodBullet
 		{
 			Renderer.Renderer GameRenderer = new Renderer.Renderer( );
 
-			GameRenderer.SetClearColour( 1.0f, 0.0f, 0.0f );
+			GameRenderer.SetClearColour( 0.6f, 0.0f, 0.0f );
 
 			while( true )
 			{
