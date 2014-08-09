@@ -51,6 +51,14 @@ namespace BloodBullet.Renderer
 			m_GraphicsDevice.Present( );
 		}
 
+		public GraphicsDevice GraphicsDevice
+		{
+			get
+			{
+				return m_GraphicsDevice;
+			}
+		}
+
 		private GraphicsDevice			m_GraphicsDevice;
 		private GraphicsAdapter			m_GraphicsAdapter;
 		private PresentationParameters	m_PresentationParameters;
