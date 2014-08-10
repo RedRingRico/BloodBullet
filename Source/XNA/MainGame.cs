@@ -5,53 +5,27 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Net;
 using Microsoft.Xna.Framework.GamerServices;
+#if WINDOWS
+using System.Windows.Forms;
+#endif
 
 namespace BloodBullet
 {
 	static class MainGame
 	{
+#if WINDOWS
+		[STAThread]
+#endif
 		static void Main( string[ ] p_Args )
 		{
-			Renderer.Renderer GameRenderer = new Renderer.Renderer( );
+			Game.Game TheGame = new Game.Game( );
 
-			GameRenderer.SetClearColour( 0.6f, 0.0f, 0.0f );
-
-			NetworkSession	m_NetworkSession;
-			PacketReader	m_PacketReader = new PacketReader( );
-
-			m_NetworkSession = NetworkSession.Create(
-				NetworkSessionType.SystemLink, 1, 8 );
-
-			while( true )
+			if( TheGame.Initialise( ) != 0 )
 			{
-				if( m_NetworkSession != null )
-				{
-					NetworkGamer Sender;
-					foreach( LocalNetworkGamer Local in
-						m_NetworkSession.LocalGamers )
-					{
-						if( Local.IsDataAvailable )
-						{
-							Local.ReceiveData( m_PacketReader, out Sender );
-							Color ClearColour =
-								new Color( m_PacketReader.ReadVector4( ) );
-
-							GameRenderer.ClearColour = ClearColour;
-						}
-					}
-				}
-
-				GameRenderer.BeginScene( );
-				GameRenderer.EndScene( );
-
-				GamerServicesDispatcher.Update( );
-				m_NetworkSession.Update( );
+				return;
 			}
 
-			if( m_NetworkSession != null )
-			{
-				m_NetworkSession.Dispose( );
-			}
+			TheGame.Execute( );
 		}
 	}
 }

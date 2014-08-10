@@ -66,10 +66,8 @@ namespace BloodBullet
 				DeviceResetting( this, EventArgs.Empty );
 			}
 
-			m_PresentationParameters.BackBufferWidth =
-				Math.Max( p_Width, m_PresentationParameters.BackBufferWidth );
-			m_PresentationParameters.BackBufferHeight =
-				Math.Max( p_Height, m_PresentationParameters.BackBufferHeight );
+			m_PresentationParameters.BackBufferWidth = p_Width;
+			m_PresentationParameters.BackBufferHeight = p_Height;
 
 			m_GraphicsDevice.Reset( m_PresentationParameters );
 
