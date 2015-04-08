@@ -95,6 +95,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Game\Game.cs" />
+    <Compile Include="Game\GameplayGameState.cs" />
+    <Compile Include="Game\GameState.cs" />
+    <Compile Include="Game\GameStateManager.cs" />
     <Compile Include="GraphicsDeviceService.cs" />
     <Compile Include="MainGame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

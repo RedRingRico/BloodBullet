@@ -107,10 +107,17 @@ namespace BloodBullet.Game
 					if( LocalGamer.IsDataAvailable )
 					{
 						LocalGamer.ReceiveData( m_PacketReader, out Sender );
-						Color ClearColour =
-							new Color( m_PacketReader.ReadVector4( ) );
-
-						m_Renderer.ClearColour = ClearColour;
+						uint MessageType = m_PacketReader.ReadUInt32( );
+						switch( MessageType )
+						{
+							case 1:
+							{
+								Color ClearColour =
+									new Color( m_PacketReader.ReadVector4( ) );
+								m_Renderer.ClearColour = ClearColour;
+								break;
+							}
+						}
 					}
 				}
 				m_NetworkSession.Update( );
@@ -174,8 +181,9 @@ namespace BloodBullet.Game
 
 		private bool		m_Running;
 		Renderer.Renderer	m_Renderer;
-		NetworkSession	m_NetworkSession;
-		PacketReader	m_PacketReader;
+		NetworkSession		m_NetworkSession;
+		PacketReader		m_PacketReader;
+		GameStateManager	m_GameStateMangager;
 
 #if WINDOWS
 		private BloodBulletForm m_Form;

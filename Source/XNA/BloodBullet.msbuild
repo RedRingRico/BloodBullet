@@ -1,0 +1,38 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<BinaryDirectory Include="$(BUILD_DIR)\Bin\$(BuildPlatform)\" />
+		<RedistDirectory Include="$(BUILD_DIR)\Redist\$(BuildPlatform)\" />
+		<SolutionFile Include="BloodBullet.sln"/>
+	</ItemGroup>
+	
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+		<BuildPlatform Condition=" '$(BulidPlatform)' == '' ">Xbox 360</BuildPlatform>
+	</PropertyGroup>
+
+	<Target Name="Compile" DependsOnTargets="Init">
+		<MSBuild Projects="@(SolutionFile)" Targets="Rebuild"
+			Properties="OutDir=%(BinaryDirectory.FullPath);Configuration=$(Configuration);Platform=$(BuildPlatform)">
+			<Output
+				ItemName="Executable"
+				TaskParameter="TargetOutputs"/>
+		</MSBuild>
+	</Target>
+
+	<Target Name="Init">
+		<MakeDir Directories="@(BinaryDirectory)"/>
+		<MakeDir Directories="@(RedistDirectory)"/>
+	</Target>
+
+	<Target Name="Clean">
+		<RemoveDir Directories="@(BinaryDirectory);@(RedistDirectory)"/>
+	</Target>
+
+	<Target Name="PackageGame" DependsOnTargets="Compile">
+		<Exec Command='xnapack "%(Executable.FullPath)" /output:"@(RedistDirectory)%(Executable.Filename) [$(Configuration)].ccgame"'/>
+	</Target>
+
+	<Target Name="PackageGameClean" DependsOnTargets="Clean;Compile;PackageGame">
+	</Target>
+</Project>
+
