@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.GamerServices;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
-using Microsoft.Xna.Framework;
 #if WINDOWS
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
@@ -19,8 +20,11 @@ namespace BloodBullet.Game
 		{
 #if WINDOWS
 			m_Form = new BloodBulletForm( this );
-			m_Form.SetSize( 1280, 720 );
+			m_RenderFullscreen = false;
+			m_Form.SetSize( 1280, 720, m_RenderFullscreen );
+			m_FormBorderStyle = FormBorderStyle.Sizable;
 #endif
+
 			m_PacketReader = new PacketReader( );
 		}
 
@@ -29,12 +33,14 @@ namespace BloodBullet.Game
 			PresentationParameters Presentation =
 				new PresentationParameters( );
 
+			#region Windows specific
 #if WINDOWS
 			Presentation.BackBufferWidth = m_Form.ClientSize.Width;
 			Presentation.BackBufferHeight = m_Form.ClientSize.Height;
 			Presentation.IsFullScreen = false;
 			Presentation.DeviceWindowHandle = m_Form.Handle;
 #endif
+			#endregion
 
 			Presentation.BackBufferFormat = SurfaceFormat.Color;
 			Presentation.DepthStencilFormat = DepthFormat.Depth24Stencil8;
@@ -52,14 +58,18 @@ namespace BloodBullet.Game
 		{
 			m_Running = true;
 
+			#region Windows specific
 #if WINDOWS
 			m_Form.Show( );
 			NativeMessage PeekedMessage = new NativeMessage( );
 #endif
-			while( m_Running )
+			#endregion
+
+			while ( m_Running )
 			{
+					#region Windows specific
 #if WINDOWS
-				if( !m_Form.Created )
+				if ( !m_Form.Created )
 				{
 					break;
 				}
@@ -72,11 +82,14 @@ namespace BloodBullet.Game
 				else
 				{
 #endif
+				#endregion
 					this.Update( );
 					this.Render( );
+					#region Windows specific
 #if WINDOWS
 				}
 #endif
+					#endregion
 			}
 
 			if( m_NetworkSession != null )
@@ -85,9 +98,11 @@ namespace BloodBullet.Game
 				m_NetworkSession = null;
 			}
 
+			#region Windows specific
 #if WINDOWS
 			Application.Exit( );
 #endif
+			#endregion
 		}
 
 		private void Render( )
@@ -98,7 +113,61 @@ namespace BloodBullet.Game
 
 		private void Update( )
 		{
-			if( m_NetworkSession != null )
+			GamePadState NewGamepadState = GamePad.GetState( PlayerIndex.One );
+			KeyboardState NewKeyboardState =
+				Keyboard.GetState( PlayerIndex.One );
+
+			if( NewGamepadState.Buttons.Back != m_OldGamepadState.Buttons.Back )
+			{
+				if( NewGamepadState.Buttons.Back ==
+					Microsoft.Xna.Framework.Input.ButtonState.Pressed )
+				{
+					m_Running = false;
+				}
+			}
+
+			#region Windows specific
+#if WINDOWS
+			if ( NewKeyboardState.IsKeyDown(
+					Microsoft.Xna.Framework.Input.Keys.F11 ) !=
+				m_OldKeyboardState.IsKeyDown(
+					Microsoft.Xna.Framework.Input.Keys.F11 ) )
+			{
+				if( NewKeyboardState.IsKeyDown(
+					Microsoft.Xna.Framework.Input.Keys.F11 ) )
+				{
+					m_RenderFullscreen = !m_RenderFullscreen;
+
+					if( m_RenderFullscreen )
+					{
+						System.Diagnostics.Debug.WriteLine( "Fullscreen" );
+						System.Drawing.Rectangle DesktopSize;
+						DesktopSize =
+							Screen.FromHandle( m_Form.Handle ).Bounds;
+						System.Diagnostics.Debug.WriteLine( "Bounds: {0}",
+							DesktopSize.ToString( ) );
+
+						m_Form.SetBounds( DesktopSize.X, DesktopSize.Y,
+							DesktopSize.Width, DesktopSize.Height );
+
+						m_FormBorderStyle = m_Form.FormBorderStyle;
+						m_Form.FormBorderStyle = FormBorderStyle.None;
+						m_Form.SetSize( DesktopSize.Width, DesktopSize.Height,
+							m_RenderFullscreen );
+					}
+					else
+					{
+						System.Diagnostics.Debug.WriteLine( "Windowed" );
+
+						m_Form.SetSize( 1280, 720, m_RenderFullscreen );
+						m_Form.FormBorderStyle = m_FormBorderStyle;
+					}
+				}
+			}
+#endif
+			#endregion
+
+			if ( m_NetworkSession != null )
 			{
 				NetworkGamer Sender;
 				foreach( LocalNetworkGamer LocalGamer in
@@ -107,17 +176,10 @@ namespace BloodBullet.Game
 					if( LocalGamer.IsDataAvailable )
 					{
 						LocalGamer.ReceiveData( m_PacketReader, out Sender );
-						uint MessageType = m_PacketReader.ReadUInt32( );
-						switch( MessageType )
-						{
-							case 1:
-							{
-								Color ClearColour =
-									new Color( m_PacketReader.ReadVector4( ) );
-								m_Renderer.ClearColour = ClearColour;
-								break;
-							}
-						}
+						Color ClearColour =
+							new Color( m_PacketReader.ReadVector4( ) );
+
+						m_Renderer.ClearColour = ClearColour;
 					}
 				}
 				m_NetworkSession.Update( );
@@ -136,6 +198,8 @@ namespace BloodBullet.Game
 			}
 
 			GamerServicesDispatcher.Update( );
+			m_OldKeyboardState = NewKeyboardState;
+			m_OldGamepadState = NewGamepadState;
 		}
 
 		void NetworkSession_GamerJoined( object p_Sender,
@@ -183,10 +247,13 @@ namespace BloodBullet.Game
 		Renderer.Renderer	m_Renderer;
 		NetworkSession		m_NetworkSession;
 		PacketReader		m_PacketReader;
-		GameStateManager	m_GameStateMangager;
+		KeyboardState		m_OldKeyboardState;
+		GamePadState		m_OldGamepadState;
 
 #if WINDOWS
 		private BloodBulletForm m_Form;
+		private FormBorderStyle	m_FormBorderStyle;
+		private bool			m_RenderFullscreen;
 #endif
 	}
 }

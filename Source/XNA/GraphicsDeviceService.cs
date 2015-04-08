@@ -59,7 +59,7 @@ namespace BloodBullet
 			}
 		}
 
-		public void ResetDevice( int p_Width, int p_Height )
+		public void ResetDevice( int p_Width, int p_Height, bool p_Fullscreen )
 		{
 			if( DeviceResetting != null )
 			{
@@ -69,7 +69,12 @@ namespace BloodBullet
 			m_PresentationParameters.BackBufferWidth = p_Width;
 			m_PresentationParameters.BackBufferHeight = p_Height;
 
+			m_PresentationParameters.IsFullScreen = p_Fullscreen;
+
 			m_GraphicsDevice.Reset( m_PresentationParameters );
+
+			System.Diagnostics.Debug.WriteLine( "Device: {0}",
+				DeviceReset.ToString( ) );
 
 			if( DeviceReset != null )
 			{

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Reflection;
 
 // Thanks to: http://bobobobo.wordpress.com/2009/06/12/game-loop-in-c/
 // for the beginnings of the WinForm code and the list of system metrics and
@@ -18,14 +19,23 @@ namespace BloodBullet
 
 			this.SetStyle( ControlStyles.AllPaintingInWmPaint |
 				ControlStyles.UserPaint | ControlStyles.Opaque, true );
+
+			AssemblyTitleAttribute Title =
+				Assembly.GetExecutingAssembly( ).GetCustomAttributes(
+					typeof( AssemblyTitleAttribute ), false )[ 0 ] as
+						AssemblyTitleAttribute;
+
+			this.Text = Title.Title;
+
+			m_Fullscreen = false;
 		}
 
-		public void SetSize( int p_Width, int p_Height )
+		public void SetSize( int p_Width, int p_Height, bool p_Fullscreen )
 		{
 			this.ClientSize = new System.Drawing.Size( p_Width, p_Height );
 			if( m_Game.Renderer != null )
 			{
-				m_Game.Renderer.SetSize( p_Width, p_Height );
+				m_Game.Renderer.SetSize( p_Width, p_Height, p_Fullscreen );
 			}
 		}
 
@@ -38,16 +48,19 @@ namespace BloodBullet
 			base.WndProc( ref p_Message );
 		}
 
-		protected override void OnResize(EventArgs e)
+		protected override void OnResize( EventArgs p_Args )
 		{
 			if( m_Game.Renderer != null )
 			{
-				m_Game.Renderer.SetSize( ClientSize.Width, ClientSize.Height );
+				m_Game.Renderer.SetSize( ClientSize.Width, ClientSize.Height,
+					m_Fullscreen );
 			}
-			base.OnResize(e);
+
+			base.OnResize( p_Args );
 		}
 		
 		Game.Game	m_Game;
+		private bool	m_Fullscreen;
 	}
 
 	class Win32

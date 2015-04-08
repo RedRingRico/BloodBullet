@@ -157,7 +157,8 @@ namespace BloodBullet.Renderer
 			{
 				try
 				{
-					m_GraphicsDeviceService.ResetDevice( m_Width, m_Height );
+					m_GraphicsDeviceService.ResetDevice( m_Width, m_Height,
+						m_Fullscreen );
 				}
 				catch( Microsoft.Xna.Framework.Graphics.DeviceLostException
 					p_Exception )
@@ -181,10 +182,11 @@ namespace BloodBullet.Renderer
 		}
 #endif
 
-		public void SetSize( int p_Width, int p_Height )
+		public void SetSize( int p_Width, int p_Height, bool p_Fullscreen )
 		{
 			m_Width = p_Width;
 			m_Height = p_Height;
+			m_Fullscreen = p_Fullscreen;
 		}
 
 		private GraphicsAdapter			m_GraphicsAdapter;
@@ -198,5 +200,7 @@ namespace BloodBullet.Renderer
 		private int m_Height;
 
 		private bool m_DeviceLost;
+
+		private bool	m_Fullscreen;
 	}
 }
