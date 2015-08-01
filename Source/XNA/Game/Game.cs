@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Net;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 #if WINDOWS
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
@@ -176,10 +177,22 @@ namespace BloodBullet.Game
 					if( LocalGamer.IsDataAvailable )
 					{
 						LocalGamer.ReceiveData( m_PacketReader, out Sender );
-						Color ClearColour =
-							new Color( m_PacketReader.ReadVector4( ) );
 
-						m_Renderer.ClearColour = ClearColour;
+						uint MessageType = m_PacketReader.ReadUInt32( );
+
+						switch( MessageType )
+						{
+							// Clear Colour
+							case 1:
+							{
+								Color ClearColour = new Color(
+									m_PacketReader.ReadVector3( ) );
+
+								m_Renderer.ClearColour = ClearColour;
+
+								break;
+							}
+						}
 					}
 				}
 				m_NetworkSession.Update( );
