@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Graphics.PackedVector;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 #endif
+using BloodBullet.Renderer;
 
 namespace BloodBullet.Game
 {
@@ -27,6 +28,7 @@ namespace BloodBullet.Game
 #endif
 
 			m_PacketReader = new PacketReader( );
+
 		}
 
 		public int Initialise( )
@@ -51,6 +53,10 @@ namespace BloodBullet.Game
 			m_Renderer = new Renderer.Renderer( Presentation );
 
 			m_Renderer.SetClearColour( 0.6f, 0.0f, 0.0f );
+
+			m_TestModel = new Renderer.Model( ref m_Renderer );
+			string ModelString = "TestModel.blood";
+			m_TestModel.Load( ref ModelString );
 
 			return 0;
 		}
@@ -109,6 +115,7 @@ namespace BloodBullet.Game
 		private void Render( )
 		{
 			m_Renderer.BeginScene( );
+			m_TestModel.Render( );
 			m_Renderer.EndScene( );
 		}
 
@@ -262,6 +269,7 @@ namespace BloodBullet.Game
 		PacketReader		m_PacketReader;
 		KeyboardState		m_OldKeyboardState;
 		GamePadState		m_OldGamepadState;
+		private Renderer.Model		m_TestModel;
 
 #if WINDOWS
 		private BloodBulletForm m_Form;

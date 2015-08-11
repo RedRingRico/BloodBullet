@@ -1,4 +1,4 @@
-# Directories #
+g Directories #
 Obj
 obj
 Bin
@@ -19,6 +19,8 @@ ipch
 Data
 gen
 Gen
+cooked
+Cooked
 
 # Complied #
 *.obj
@@ -63,3 +65,6 @@ GitVersion.hpp
 
 # Ignore all future modifications to the AssemblyInfo.cs file #
 Source/XNA/Properties/AssemblyInfo.cs
+
+# Debug #
+*.cachefile
